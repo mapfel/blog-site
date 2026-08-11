@@ -1,0 +1,29 @@
+{{ define "main" }}
+  <article class="article shell-narrow">
+    <header class="article-header">
+      {{ with .Params.topics }}
+        <div class="topic-chips">
+          {{ range . }}<a href="{{ printf `/topics/%s/` (. | urlize) | relURL }}">{{ . }}</a>{{ end }}
+        </div>
+      {{ end }}
+      <h1>{{ .Title }}</h1>
+      {{ with .Description }}<p class="article-deck">{{ . }}</p>{{ end }}
+      {{ if eq .Section "posts" }}
+        <div class="article-meta">
+          <time datetime="{{ .Date.Format `2006-01-02` }}">{{ .Date.Format "2 January 2006" }}</time>
+          <span aria-hidden="true">·</span>
+          <span>{{ .ReadingTime }} min read</span>
+        </div>
+      {{ end }}
+    </header>
+
+    <div class="prose">{{ .Content }}</div>
+
+    {{ with .Params.tags }}
+      <footer class="article-footer">
+        <span>Tagged:</span>
+        {{ range . }}<a href="{{ printf `/tags/%s/` (. | urlize) | relURL }}">{{ . }}</a>{{ end }}
+      </footer>
+    {{ end }}
+  </article>
+{{ end }}

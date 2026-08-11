@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="{{ site.Language.Locale | default `en-US` }}">
+  <head>
+    {{ partial "head.html" . }}
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <header class="site-header">
+      <div class="shell header-inner">
+        <a class="brand" href="{{ `/` | relURL }}" aria-label="{{ site.Title }} home">
+          <span class="brand-mark" aria-hidden="true">MA</span>
+          <span class="brand-name">{{ site.Title }}</span>
+        </a>
+        <nav class="main-nav" aria-label="Main navigation">
+          {{ range site.Menus.main }}
+            <a href="{{ .URL }}"{{ if $.IsMenuCurrent `main` . }} aria-current="page"{{ end }}>{{ .Name }}</a>
+          {{ end }}
+        </nav>
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch color theme">
+          <span aria-hidden="true">◐</span><span class="theme-label">Theme</span>
+        </button>
+      </div>
+    </header>
+
+    <main id="main-content">
+      {{ block "main" . }}{{ end }}
+    </main>
+
+    <footer class="site-footer">
+      <div class="shell footer-inner">
+        <p>© {{ now.Year }} {{ site.Params.author }}. Built with Hugo.</p>
+        <nav aria-label="Footer navigation">
+          <a href="{{ `/index.xml` | relURL }}">RSS</a>
+          {{ with site.GetPage `/imprint` }}{{ if not .Draft }}<a href="{{ .RelPermalink }}">Imprint</a>{{ end }}{{ end }}
+          {{ with site.GetPage `/privacy` }}{{ if not .Draft }}<a href="{{ .RelPermalink }}">Privacy</a>{{ end }}{{ end }}
+        </nav>
+      </div>
+    </footer>
+
+    {{ $script := resources.Get "js/main.js" | minify | fingerprint }}
+    <script src="{{ $script.RelPermalink }}" integrity="{{ $script.Data.Integrity }}" defer></script>
+  </body>
+</html>

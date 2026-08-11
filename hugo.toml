@@ -1,0 +1,68 @@
+baseURL = "https://blog.marko-apfel.de/"
+locale = "en-US"
+defaultContentLanguage = "en"
+title = "Marko Apfel"
+timeZone = "Europe/Berlin"
+enableRobotsTXT = true
+summaryLength = 32
+
+[pagination]
+  pagerSize = 10
+
+[permalinks]
+  [permalinks.page]
+    posts = "/posts/:slug/"
+  [permalinks.section]
+    posts = "/posts/"
+
+[taxonomies]
+  topic = "topics"
+  tag = "tags"
+  series = "series"
+
+[outputs]
+  home = ["HTML", "RSS"]
+  section = ["HTML", "RSS"]
+  taxonomy = ["HTML", "RSS"]
+  term = ["HTML", "RSS"]
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = false
+  [markup.highlight]
+    noClasses = false
+    lineNos = false
+    guessSyntax = true
+
+[caches]
+  [caches.images]
+    dir = ":cacheDir/images"
+
+[params]
+  author = "Marko Apfel"
+  description = "Practical notes about software engineering, useful tools, productivity, and media workflows."
+  tagline = "Engineering notes for better digital work."
+
+[[menus.main]]
+  name = "Articles"
+  pageRef = "/posts"
+  weight = 10
+
+[[menus.main]]
+  name = "Topics"
+  pageRef = "/topics"
+  weight = 20
+
+[[menus.main]]
+  name = "About"
+  pageRef = "/about"
+  weight = 30
+
+[[module.mounts]]
+  source = "content"
+  target = "content"
+
+[[module.mounts]]
+  source = "content-source/content/posts"
+  target = "content/posts"

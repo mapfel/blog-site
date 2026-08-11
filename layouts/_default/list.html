@@ -1,0 +1,20 @@
+{{ define "main" }}
+  <header class="page-header shell">
+    <p class="eyebrow">{{ if eq .Kind `section` }}All writing{{ else }}Browse by {{ .Kind }}{{ end }}</p>
+    <h1>{{ .Title }}</h1>
+    {{ with .Description }}<p class="page-intro">{{ . }}</p>{{ end }}
+    {{ with .Content }}<div class="page-intro prose">{{ . }}</div>{{ end }}
+  </header>
+
+  <section class="shell section-block">
+    {{ if .Pages }}
+      <div class="article-list">
+        {{ range .Pages.ByDate.Reverse }}
+          {{ if .IsPage }}{{ partial "article-card.html" . }}{{ end }}
+        {{ end }}
+      </div>
+    {{ else }}
+      <div class="empty-state"><p>No published articles here yet.</p></div>
+    {{ end }}
+  </section>
+{{ end }}

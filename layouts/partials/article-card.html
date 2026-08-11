@@ -1,0 +1,13 @@
+<article class="article-card">
+  <div class="card-meta">
+    <time datetime="{{ .Date.Format `2006-01-02` }}">{{ .Date.Format "02 Jan 2006" }}</time>
+    <span>{{ .ReadingTime }} min</span>
+  </div>
+  <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
+  <p>{{ .Description | default .Summary }}</p>
+  {{ with .Params.topics }}
+    <div class="card-topics" aria-label="Topics">
+      {{ range . }}<span>{{ . }}</span>{{ end }}
+    </div>
+  {{ end }}
+</article>
