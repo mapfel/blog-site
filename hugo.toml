@@ -55,6 +55,11 @@ summaryLength = 32
   weight = 20
 
 [[menus.main]]
+  name = "Tags"
+  pageRef = "/tags"
+  weight = 25
+
+[[menus.main]]
   name = "About"
   pageRef = "/about"
   weight = 30
