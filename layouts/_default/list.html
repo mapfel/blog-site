@@ -7,10 +7,23 @@
   </header>
 
   <section class="shell section-block">
-    {{ if .Pages }}
+    {{ if eq .Kind `taxonomy` }}
+      {{ if .Pages }}
+        <div class="term-list">
+          {{ range .Pages.ByTitle }}
+            <a class="term-card" href="{{ .RelPermalink }}">
+              <span>{{ .Title }}</span>
+              <strong>{{ len .Pages }}</strong>
+            </a>
+          {{ end }}
+        </div>
+      {{ else }}
+        <div class="empty-state"><p>Nothing here yet.</p></div>
+      {{ end }}
+    {{ else if .Pages }}
       <div class="article-list">
         {{ range .Pages.ByDate.Reverse }}
-          {{ if .IsPage }}{{ partial "article-card.html" . }}{{ end }}
+          {{ partial "article-card.html" . }}
         {{ end }}
       </div>
     {{ else }}

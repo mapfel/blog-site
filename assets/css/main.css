@@ -196,6 +196,11 @@ button, input { font: inherit; }
 .card-topics { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: 1.2rem; }
 .card-topics span { padding: .2rem .5rem; border-radius: 999px; background: var(--pine-soft); color: var(--pine); font-size: .72rem; font-weight: 750; }
 
+.term-list { display: flex; flex-wrap: wrap; gap: .75rem; }
+.term-card { display: flex; align-items: center; gap: .55rem; padding: .65rem 1.1rem; border: 1px solid var(--line); border-radius: .6rem; background: color-mix(in srgb, var(--paper-raised) 88%, transparent); text-decoration: none; color: inherit; font-weight: 750; box-shadow: var(--shadow); }
+.term-card:hover { border-color: var(--pine); }
+.term-card strong { display: grid; place-items: center; min-width: 1.6rem; min-height: 1.6rem; border-radius: 50%; background: var(--pine-soft); color: var(--pine); font-size: .72rem; }
+
 .empty-state { padding: clamp(2rem, 6vw, 4rem); border: 1px dashed var(--line); border-radius: .7rem; background: color-mix(in srgb, var(--paper-raised) 65%, transparent); }
 .empty-state h3 { margin: .2rem 0 .5rem; font-family: Georgia, "Times New Roman", serif; font-size: 1.8rem; }
 .empty-state p { max-width: 640px; color: var(--muted); }
