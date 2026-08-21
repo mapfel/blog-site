@@ -23,11 +23,16 @@ jobs:
       PAGEFIND_VERSION: 1.5.2
       TZ: Europe/Berlin
     steps:
-      - name: Checkout site and content
+      - name: Checkout site
         uses: actions/checkout@v7
         with:
-          submodules: recursive
+          submodules: false
           fetch-depth: 0
+
+      - name: Checkout content submodule
+        run: |
+          git config submodule.content-source.url "https://x-access-token:${{ secrets.BLOG_CONTENT_PAT }}@github.com/mapfel/blog-content.git"
+          git submodule update --init --recursive
 
       - name: Set up Python
         uses: actions/setup-python@v6
