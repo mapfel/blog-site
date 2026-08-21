@@ -20,6 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       HUGO_VERSION: 0.164.0
+      PAGEFIND_VERSION: 1.5.2
       TZ: Europe/Berlin
     steps:
       - name: Checkout site and content
@@ -62,6 +63,12 @@ jobs:
             hugo --gc --minify --baseURL "${{ steps.pages.outputs.base_url }}/" \
               --cacheDir "${{ runner.temp }}/hugo-cache"
           fi
+
+      - name: Build search index
+        shell: bash
+        run: |
+          pip install "pagefind[bin]==${PAGEFIND_VERSION}"
+          python -m pagefind --site public
 
       - name: Upload Pages artifact
         if: github.event_name != 'pull_request'

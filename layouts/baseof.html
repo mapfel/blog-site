@@ -16,13 +16,18 @@
             <a href="{{ .URL }}"{{ if $.IsMenuCurrent `main` . }} aria-current="page"{{ end }}>{{ .Name }}</a>
           {{ end }}
         </nav>
+        {{ if not hugo.IsServer }}
+          <pagefind-modal-trigger class="search-toggle"></pagefind-modal-trigger>
+        {{ end }}
         <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch color theme">
           <span aria-hidden="true">◐</span><span class="theme-label">Theme</span>
         </button>
       </div>
     </header>
 
-    <main id="main-content">
+    {{/* data-pagefind-body marks this as the only region Pagefind should index,
+         so header/nav/footer chrome never pollutes search results. */}}
+    <main id="main-content" data-pagefind-body>
       {{ block "main" . }}{{ end }}
     </main>
 
@@ -36,6 +41,10 @@
         </nav>
       </div>
     </footer>
+
+    {{ if not hugo.IsServer }}
+      <pagefind-modal></pagefind-modal>
+    {{ end }}
 
     {{ $script := resources.Get "js/main.js" | minify | fingerprint }}
     <script src="{{ $script.RelPermalink }}" integrity="{{ $script.Data.Integrity }}" defer></script>
