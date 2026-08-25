@@ -24,7 +24,7 @@ If the user gives you an explicit file list or different paths instead of pointi
    - Produce or complete TOML front matter (with `topics` field instead of `categories`, `description` as overview about the post).
    - Produce the post body (see "Content handling" below).
    - Copy any referenced images into the same bundle folder, fixing links to be bundle-relative.
-3. **Validate** every post's TOML parses.
+3. **Validate** every post's TOML parses and that every mandatory field (see below) is present and non-empty.
 4. **Check for path collisions** in the destination repo before copying anything in.
 5. **Copy** finished posts (and their images) into the destination repo.
 6. **Flip the CSV** rows from `Y` to `O` for everything successfully copied (CSV-driven flow only).
@@ -73,7 +73,14 @@ description = "One-sentence, slightly more SEO/meta-flavored take on the same co
 - `tags`: PascalCase, no hyphens (`clean-code` → `CleanCode`). Respect established product/brand casing already used elsewhere in this blog: `DotNet`, `CSharp`, `NuGet`, `StyleCop`, `MSBuild`, `GRPC`, `AzureDevOps`, `OOP`, `MQTT`, `TLS`. Keep numerals as-is (`I18n`, `L10n`). Check a few existing posts in the destination repo for tags already in use on the same topic before inventing a new casing for something similar.
 - `topics`: reuse the convention already present in existing posts in the destination repo (this blog currently uses a single `topics = ["Development"]`) unless the content clearly belongs elsewhere.
 - `draft`: default `false`, unless the source explicitly marks itself as a draft/unfinished (e.g. `status: draft` in its own front matter) — in that case set `draft = true` and say so in your report rather than silently publishing something the author flagged as unfinished.
-- Always end by validating: `python3 -c "import tomllib; tomllib.loads(open(path,'rb').read().decode().split('+++')[1])"` (or equivalent) for every file you touch.
+
+**Mandatory fields — never skip these, even for a short or trivial post:**
+
+- `description` and `lastmod` are just as mandatory as `title` and `date`. They are easy to forget because they add no visible content to the rendered post, but every published post in this repo carries both. Do not treat them as optional polish.
+  - `lastmod`: derive it the same way as `date` (see "Timestamps" above) — it is the newest-commit author date, not a copy of `date`, except when the source has only ever had one commit, in which case they're equal.
+  - `description`: write it yourself if the source doesn't supply one — never leave it blank or copy the `summary` verbatim into it.
+- Before finishing, re-read the front matter of every file you touched and confirm `title`, `date`, `lastmod`, `slug`, `tags`, `topics`, and `description` are all present and non-empty. Treat a missing `description` or `lastmod` as a blocking error to fix before reporting done, not a nit to mention afterward.
+- Always end by validating TOML parses, e.g.: `python3 -c "import tomllib; tomllib.loads(open(path,'rb').read().decode().split('+++')[1])"` (or equivalent) for every file you touch.
 
 ## Content handling
 
@@ -111,6 +118,7 @@ After a file is successfully validated and copied to the destination, flip its `
 Always end with:
 
 - A table of source file → destination post path (and note any merges).
+- Confirmation that `description` and `lastmod` were set on every post (these are the two fields most likely to be silently skipped — call them out explicitly, don't just imply it via "front matter completed").
 - Any front-matter fields you had to infer vs. ones you preserved from existing front matter.
 - Every content-integrity flag you hit (non-original content, unresolved debate framing, sanitized internal info, draft status carried over) — these are the things the user most needs to see, don't let them get lost in a wall of "done" text.
 - Any collisions or skipped files, with the reason.
