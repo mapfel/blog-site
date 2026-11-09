@@ -22,7 +22,11 @@ Read [references/conventions.md](references/conventions.md) for the header schem
 
 Locate the active checkout: the site repository normally contains `hugo.toml` and the content submodule at `content-source/`. If working directly in the content repository, posts are under `content/posts/`. Inspect the current archetype, validator, configuration, and a few related posts before writing metadata or cross-links; the repository may have evolved since this skill was recorded.
 
-Preserve existing dates, slugs, attribution, and useful metadata when revising. For new posts, use the front matter and bundle rules in the reference. Leave newly written drafts as `draft = true` unless the user has directed otherwise. Writing a file does not authorize committing, pushing, or deploying it.
+Preserve existing dates, slugs, attribution, and useful metadata when revising. For new posts, use the front matter and bundle rules in the reference.
+
+For articles created through the pull request workflow, set `draft = false`. The feature branch and draft pull request serve as the editorial review boundary.
+
+Never merge a pull request, update the site's submodule pointer, or trigger publication without explicit authorization.
 
 Before handing off, check the post's technical fidelity, header, heading hierarchy, links, and bundled media. Run the content validator if a working Python 3.11+ runtime is available:
 
