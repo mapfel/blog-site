@@ -1,0 +1,4 @@
+interface:
+  display_name: "Marko's Blog Writing"
+  short_description: "Write practical Hugo posts in Marko's blog style"
+  default_prompt: "Use $blog-post-writing to turn my notes into a post for Marko's blog."
