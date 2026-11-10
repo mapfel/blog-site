@@ -75,6 +75,9 @@ else {
 & $hugoExe version
 & $pagefindExe --version
 
+# Agent skills are tooling too: link them for agents with their own skill folder.
+& (Join-Path $PSScriptRoot 'link-agent-skills.ps1')
+
 Write-Host ''
 Write-Host 'Add the tools to PATH for the current PowerShell session with:'
 Write-Host "  `$env:Path = `"$hugoDir;$pagefindDir;`$env:Path`""

@@ -31,7 +31,8 @@ blog-site/              site repository (layouts, config, workflow)
 `install-tools.ps1` reads the Hugo and Pagefind versions from the Pages workflow,
 so local builds use the same versions as the deployment. Rerun it after the
 workflow versions change; `-Force` reinstalls. It prints a line that puts both
-tools on `PATH` for the current PowerShell session.
+tools on `PATH` for the current PowerShell session, and it runs
+`scripts/link-agent-skills.ps1` (see [Agent instructions](#agent-instructions)).
 
 A submodule is checked out at the commit recorded by this repository, in
 detached-HEAD state. Switch it to `main` (as above) before writing articles.
@@ -72,7 +73,10 @@ Run the authoring helper from the site repository:
 ./scripts/new-post.ps1 -Title "My article title"
 ```
 
-The helper creates `content-source/content/posts/YYYY/MM/<slug>/index.md`.
+The helper creates `content-source/content/posts/YYYY/MM/<slug>/index.md` with
+`draft = false`; add `-Draft` for a Hugo draft, `-Slug` for an explicit slug, and
+`-Date` for another publication date. Fill in the empty description, topics,
+and tags before validating.
 Commit and push that change from inside `content-source`, then commit the updated
 submodule pointer in this repository.
 
@@ -93,6 +97,21 @@ git add content-source
 git commit -m "Update article repository"
 git push
 ```
+
+## Agent instructions
+
+Coding agents share one set of instructions:
+
+- `AGENTS.md` holds the repository rules. `CLAUDE.md` only imports it.
+- `.agents/skills/` holds the skills: `blog-post-writing` (voice, header, and
+  article conventions), `hugo-article-workflow` (draft pull request for review),
+  and `maintain-blog` (local runs, migration, taxonomies, site changes,
+  publishing).
+- Codex and Kimi Code read `AGENTS.md` and `.agents/skills/` directly. Claude Code
+  reads `.claude/skills/`, which `scripts/link-agent-skills.ps1` fills with
+  junctions (symlinks outside Windows) to the canonical skills. The links are
+  ignored by Git; rerun the script after adding or renaming a skill.
+- `content-source/AGENTS.md` holds the rules for the content repository on its own.
 
 ## GitHub Pages
 

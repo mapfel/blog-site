@@ -1,125 +1,118 @@
 ---
 name: maintain-blog
-description: Create, edit, migrate, validate, or maintain posts, taxonomies, and the Hugo site for Marko Apfel's blog. Use for this blog's workflow, not generic blogging advice or unrelated websites.
+description: Run, migrate, and maintain Marko Apfel's Hugo blog. Use to preview, build, or test search locally ("start the local server"); to migrate notes, wiki pages, or a migration CSV into posts; to audit topics and tags; to change hugo.toml, layouts, or the content-source submodule; and to publish. For writing a single post, use blog-post-writing.
 ---
 
 # Maintain Blog
 
 ## Locate the work
 
-Read applicable `AGENTS.md` files and inspect Git status. Locate the site through
-`hugo.toml` and its content mount, rather than a hardcoded machine path.
-`blog-site/content-source` is the content repository's submodule checkout and
-the default place to edit. A sibling `blog-content` clone, if present, is an
-independent checkout of the same repository. Choose the appropriate checkout,
-preserve dirty work, and report which changed. Never silently reset or overwrite
-another checkout. If Hugo or Pagefind is not on `PATH`, use the binaries in the
-site's `.tools/` folder (`scripts/install-tools.ps1` installs them).
+Read the applicable `AGENTS.md` files and inspect Git status in both
+repositories. Find the site through `hugo.toml` and its content mount, not a
+hardcoded machine path. `content-source/` is the default place to edit articles;
+a sibling `blog-content` clone is an independent checkout. Choose the checkout
+deliberately, preserve dirty work, and report which one changed.
 
-Consult relevant READMEs, `archetypes/posts.md`, `scripts/new-post.ps1`, the content
-validator, and `.github/workflows/pages.yml` as needed. Current configuration
-takes precedence over old examples. Existing `.claude/agents/` files provide
-migration and tag-audit background; they do not authorize delegation.
+When `content-source/` is empty after a clone, run
+`git submodule update --init --recursive`. Current configuration takes
+precedence over old examples. When `.tools/` is missing, run
+`scripts/install-tools.ps1`; it also refreshes the agent-skill links.
 
-## Author and edit
+## Preview, build, and search
 
-From the site root, use the existing helper when suitable:
+Paths are relative to the site root.
 
 ```powershell
-./scripts/new-post.ps1 -Title "Article title" -Slug "article-title"
+./.tools/hugo/hugo.exe server --buildDrafts
 ```
 
-It writes `content-source/content/posts/YYYY/MM/<slug>/index.md`. Supply `-Date`
-for a specific date. Choose an explicit readable ASCII slug for non-ASCII titles:
-automatic slugging removes characters rather than transliterating them. Check
-slug uniqueness across all years, not just the destination directory.
+`hugo server` runs until stopped, so start it in the background and give the
+user the URL (default `http://localhost:1313/`). `--buildDrafts` includes posts
+with `draft = true`; production builds exclude them.
 
-Complete the helper's empty description before validation; drafts also require
-nonempty descriptions. Retain required TOML fields from the content `AGENTS.md`.
-Use `topics`, not `categories`; tags are separate, and `series` is configured
-when appropriate. Reuse taxonomy spelling/casing. Keep new articles in draft
-unless the user specifies publication readiness.
+Search is absent under `hugo server`: `layouts/partials/head.html` and
+`layouts/baseof.html` skip Pagefind when `hugo.IsServer` is true, because the
+index exists only after a real build. To test search, mirror the workflow:
 
-Open with the reader's problem or what they will learn. Match the source language
-and relevant existing posts. No mandatory length, outline, conclusion, or
-translation policy is established. Preserve technical meaning, code, and tables;
-do not invent personal experience or measurements. Verify changing software claims
-against current primary documentation when needed.
+```powershell
+./.tools/hugo/hugo.exe --gc --minify
+./.tools/pagefind/pagefind.exe --site public --serve
+```
 
-Preserve publication dates and URL identity; update `lastmod` for substantive
-revisions without moving the post. Public URLs currently default to
-`/posts/<slug>/`, not the year/month storage path. Inspect explicit `slug`, `url`,
-and aliases before resolving or changing links.
+`--serve` prints its port. Pagefind indexes only the `data-pagefind-body` region
+in `layouts/baseof.html`.
 
 ## Migrate source material
 
-Read each selected source fully. Use the supplied file list or explicitly supplied
-migration CSV, not an assumed historical source directory. The existing CSV
-convention is `FullPath,Created,LastModified,Migrate`: `N` unselected, `Y` selected,
-`O` completed. Process selected rows only; mark completed only after copying and
-validating. Preserve other rows and original source files.
+Read each selected source fully. Work from the supplied file list or migration
+CSV, not an assumed historical source directory. The CSV convention is
+`FullPath,Created,LastModified,Migrate`: `N` unselected, `Y` selected, `O`
+completed. Process `Y` rows only, and mark a row `O` only after copying and
+validating. Preserve other rows and the original source files.
 
-Preserve existing metadata; convert YAML front matter to TOML when necessary.
-When dates are missing, prefer supplied migration metadata, then source Git
-history (`git log --follow --format="%aI|%an" -- <path>`): oldest author date for
-creation, newest for modification. Disclose filesystem timestamp fallback.
-Never replace a known publication date because the file was copied.
+Write each post following `blog-post-writing` and its conventions. In addition:
 
-Rewrite wiki syntax and terse notes into standalone prose while retaining
-technical substance. Handle these cases explicitly:
-
-- Credit copied/mirrored external text and link the original; never present it
-  as the owner's original writing. Clarify ambiguous attribution when necessary.
-- Preserve open discussions as alternatives or pros/cons; do not invent a verdict.
-- Remove or genericize incidental credentials, private hostnames, personal paths,
-  and internal identifiers while retaining the technical point. Report meaningful
+- Preserve existing metadata, and convert YAML front matter to TOML. When dates
+  are missing, prefer supplied migration metadata, then source Git history
+  (`git log --follow --format="%aI|%an" -- <path>`): the oldest author date for
+  `date`, the newest for `lastmod`. Disclose any fallback to filesystem
+  timestamps. A copy operation never changes a known publication date.
+- Rewrite wiki syntax and terse notes into standalone prose that keeps the
+  technical substance.
+- Credit copied or mirrored external text and link the original; it stays the
+  other author's work. Clarify ambiguous attribution.
+- Preserve open discussions as alternatives or pros and cons, without a verdict
+  the source lacks.
+- Genericize incidental credentials, private hostnames, personal paths, and
+  internal identifiers while keeping the technical point. Report meaningful
   substitutions.
-- Check destinations before writing; flag collisions instead of overwriting.
-  Merge overlapping sources only within the requested scope and report the merge.
+- Check destinations before writing, and flag collisions. Merge overlapping
+  sources only within the requested scope, and report the merge.
+- Copy only referenced assets, make links bundle-relative, write useful alt
+  text, and keep thumbnail-to-full-size links. Resolve internal links against
+  actual destination posts; report unresolved references instead of linking to
+  unmigrated pages.
 
-Copy referenced assets only, fix bundle-relative links, supply useful alt text,
-and retain thumbnail-to-full-size links. Resolve internal links against actual
-destination posts. Do not introduce links to unmigrated pages; report unresolved
-references rather than inventing destinations.
+## Taxonomies and site behavior
 
-## Maintain site behavior and taxonomies
+A tag audit counts exact values per post and reports casing, spelling, and
+plural variants, possible synonyms, and singletons, each with affected paths. A
+singleton is a review candidate, not proof of error. Topics and tags are
+separate taxonomies. An audit produces findings; consolidation is a separate
+request.
 
-For tag audits, count exact values per post and report casing/spelling/plural
-variants, possible synonyms, and singletons with affected paths. A singleton is
-a review candidate, not proof of error. Keep topics separate from tags. Do not
-apply bulk consolidation during an audit-only request.
+For layouts, permalinks, assets, and taxonomy changes, check the effects on
+existing posts, navigation, pagination, RSS, and search. Preserve historic URLs,
+or add redirects when URL changes are requested. Credentials stay in the
+existing secret mechanism.
 
-For layouts, permalinks, assets, and taxonomy changes, check relevant effects on
-existing posts, navigation, pagination, RSS, and search. Preserve historic URLs
-or supply redirects when URL changes are requested. Edit source files, not
-generated output. Keep credentials in the existing secret mechanism.
+## Verify and report
 
-## Verify and deliver
-
-Validate the checkout actually edited with Python 3.11+:
+Validate the checkout you edited with Python 3.11+:
 
 ```powershell
-# From the content repository
-python scripts/validate_content.py content/posts
-# Or from the site root for its submodule
+# Site root, for the submodule
 python content-source/scripts/validate_content.py content-source/content/posts
+# Content repository
+python scripts/validate_content.py content/posts
 ```
 
-The validator does not check every hyperlink, rendered layout, or technical fact.
-Build relevant site changes with `hugo --gc --minify`. Preview drafts using
-`hugo server --buildDrafts`; production builds exclude them. Inspect representative
-pages for visual changes. For search changes, also run the workflow's Pagefind
-step after Hugo. Report missing tools or checkout mismatches as verification
-limits instead of claiming edited content was built.
+The validator checks layout, path/date agreement, required keys, chronology,
+duplicate slugs, and images. It does not check hyperlinks, rendering, or
+technical facts. Build site changes with `hugo --gc --minify` and inspect
+representative pages; run Pagefind after Hugo for search changes. Report
+missing tools or checkout mismatches as limits on verification.
 
-Summarize changed files, verification, and unresolved decisions. For migrations,
-include source-to-destination mappings, preserved versus inferred metadata,
-attribution/privacy changes, and skipped items. Explicitly confirm descriptions
+Summarize changed files, verification, and open decisions. For migrations, also
+report source-to-destination mappings, preserved versus inferred metadata,
+attribution and privacy changes, skipped items, and confirm that descriptions
 and `lastmod` were completed.
 
-Authoring alone does not authorize commits, pushes, or deployment. When publishing
-is requested, publish content before the site's updated submodule pointer.
-Inspect branches first: detached submodule HEAD does not identify the intended
-publishing branch. The current workflow deploys site `main` pushes; recheck it
-before publishing. Respect existing user authorization without adding an
-unnecessary approval step.
+## Publish
+
+Publish only on request, following `README.md` under "Publish content changes":
+content repository first, then the site's submodule pointer, staging only the
+intended bundles. Check branches first: a detached submodule HEAD does not
+identify the publishing branch. The workflow deploys pushes to site `main`;
+recheck `.github/workflows/pages.yml` before publishing. Respect authorization
+the user has already given without adding approval steps.

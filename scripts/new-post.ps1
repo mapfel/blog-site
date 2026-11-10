@@ -5,7 +5,10 @@ param(
 
     [string]$Slug,
 
-    [datetime]$Date = (Get-Date)
+    [datetime]$Date = (Get-Date),
+
+    # Mark the article as a Hugo draft. New articles are publishable by default.
+    [switch]$Draft
 )
 
 $ErrorActionPreference = 'Stop'
@@ -35,13 +38,14 @@ if (Test-Path -LiteralPath $articlePath) {
 
 $escapedTitle = $Title.Replace('"', '\"')
 $timestamp = $Date.ToString('yyyy-MM-ddTHH:mm:ssK')
+$draftValue = if ($Draft) { 'true' } else { 'false' }
 $frontMatter = @"
 +++
 title = "$escapedTitle"
 description = ""
 date = $timestamp
 lastmod = $timestamp
-draft = true
+draft = $draftValue
 topics = []
 tags = []
 +++
