@@ -78,10 +78,17 @@ submodule pointer in this repository.
 
 ## Publish content changes
 
+Stage only the article bundles you mean to publish. `git add .` would also pick
+up unfinished drafts that are lying in the checkout.
+
 ```sh
-git -C content-source add .
+git -C content-source fetch
+git -C content-source merge --ff-only origin/main
+git -C content-source add content/posts/YYYY/MM/<slug>
 git -C content-source commit -m "Add article"
 git -C content-source push
+git fetch
+git merge --ff-only origin/main
 git add content-source
 git commit -m "Update article repository"
 git push
