@@ -1,3 +1,4 @@
 [submodule "content-source"]
 	path = content-source
 	url = ../blog-content.git
+	branch = main

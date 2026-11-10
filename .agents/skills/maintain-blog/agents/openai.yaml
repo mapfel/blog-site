@@ -1,0 +1,4 @@
+interface:
+  display_name: "Maintain Blog"
+  short_description: "Write, migrate, and maintain the Hugo blog"
+  default_prompt: "Use $maintain-blog to create or maintain a post in this Hugo blog."

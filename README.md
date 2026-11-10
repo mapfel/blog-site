@@ -7,21 +7,61 @@ submodule.
 ## Prerequisites
 
 - Git
-- Hugo 0.164.0 or newer
 - Python 3.11 or newer for content validation
+- Hugo and Pagefind in the versions pinned in `.github/workflows/pages.yml`
+  (installed locally by `scripts/install-tools.ps1`, see below)
 
-## Clone and run
+## Set up a machine
+
+A single recursive clone contains everything needed to write and build the blog:
+
+```powershell
+git clone --recurse-submodules <site-repository-url> blog-site
+cd blog-site
+git -C content-source switch main
+./scripts/install-tools.ps1
+```
+
+```text
+blog-site/              site repository (layouts, config, workflow)
+├── content-source/     blog-content repository as submodule (articles, media)
+└── .tools/             Hugo and Pagefind binaries (ignored, from install-tools.ps1)
+```
+
+`install-tools.ps1` reads the Hugo and Pagefind versions from the Pages workflow,
+so local builds use the same versions as the deployment. Rerun it after the
+workflow versions change; `-Force` reinstalls. It prints a line that puts both
+tools on `PATH` for the current PowerShell session.
+
+A submodule is checked out at the commit recorded by this repository, in
+detached-HEAD state. Switch it to `main` (as above) before writing articles.
+To pull newer content into it later:
 
 ```sh
-git clone --recurse-submodules <site-repository-url>
-cd blog-site
-hugo server --buildDrafts
+git submodule update --remote --merge
 ```
 
 If the repository was cloned without submodules:
 
 ```sh
 git submodule update --init --recursive
+```
+
+A separate clone of `blog-content` next to this repository is not required. If
+one exists, it is an independent checkout: its changes reach `content-source`
+only through push and pull.
+
+## Run locally
+
+```powershell
+./.tools/hugo/hugo.exe server --buildDrafts
+```
+
+To check search as well, build the site and index it like the workflow does:
+
+```powershell
+./.tools/hugo/hugo.exe --gc --minify
+./.tools/pagefind/pagefind.exe --site public
 ```
 
 ## Create an article on Windows
